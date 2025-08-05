@@ -27,7 +27,7 @@ app.include_router(
 @app.get("/")
 async def read_root():
     """主頁面"""
-    if os.path.exists("static/index.html"):
+    if os.path.exists("index.html"):
         return FileResponse('static/index.html')
     else:
         return {
