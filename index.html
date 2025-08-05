@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投資理財計算器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 投資理財計算器</h1>
+            <p>簡單實用的投資分析工具</p>
+        </header>
+
+        <!-- 功能選單 -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="bond">債券/定存</button>
+            <button class="tab-btn" data-tab="etf">ETF定投</button>
+            <button class="tab-btn" data-tab="house">房屋投資</button>
+            <button class="tab-btn" data-tab="stock">股票模擬</button>
+            <button class="tab-btn" data-tab="goal">財務目標</button>
+        </nav>
+
+        <!-- 債券/定存計算 -->
+        <div class="tab-content active" id="bond">
+            <h2>債券/定存計算器</h2>
+            <form id="bond-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>本金 (元)</label>
+                        <input type="number" name="principal" value="1000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>年利率 (%)</label>
+                        <input type="number" name="interest_rate" value="2.5" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>投資年限</label>
+                        <input type="number" name="years" value="5" min="1" max="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label>通膨率 (%)</label>
+                        <input type="number" name="inflation_rate" value="2.0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="is_compound" checked> 複利計算
+                    </label>
+                </div>
+                <button type="submit" class="btn-calculate">計算</button>
+            </form>
+            <div class="result" id="bond-result"></div>
+        </div>
+
+        <!-- ETF定期定額 -->
+        <div class="tab-content" id="etf">
+            <h2>ETF定期定額計算器</h2>
+            <form id="etf-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>初始投入 (元)</label>
+                        <input type="number" name="initial_amount" value="100000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>每月投入 (元)</label>
+                        <input type="number" name="monthly_amount" value="10000" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>年配息率 (%)</label>
+                        <input type="number" name="dividend_yield" value="3.0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>年價格成長率 (%)</label>
+                        <input type="number" name="price_growth" value="5.0" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>投資年限</label>
+                    <input type="number" name="years" value="10" min="1" max="50" required>
+                </div>
+                <button type="submit" class="btn-calculate">計算</button>
+            </form>
+            <div class="result" id="etf-result"></div>
+        </div>
+
+        <!-- 房屋投資分析 -->
+        <div class="tab-content" id="house">
+            <h2>房屋投資分析</h2>
+            <form id="house-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>房屋價格 (元)</label>
+                        <input type="number" name="house_price" value="10000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>頭期款 (元)</label>
+                        <input type="number" name="down_payment" value="2000000" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>貸款利率 (%)</label>
+                        <input type="number" name="loan_rate" value="2.0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>貸款年限</label>
+                        <input type="number" name="loan_years" value="20" min="1" max="40" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>情境A漲幅 (%)</label>
+                        <input type="number" name="appreciation_rate_a" value="40" required>
+                    </div>
+                    <div class="form-group">
+                        <label>情境B漲幅 (%)</label>
+                        <input type="number" name="appreciation_rate_b" value="60" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>年度持有成本 (元)</label>
+                        <input type="number" name="annual_cost" value="50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>模擬年數</label>
+                        <input type="number" name="simulation_years" value="10" min="1" max="50" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>情境選擇</label>
+                    <select name="scenario" required>
+                        <option value="A">情境A - 提前賣出</option>
+                        <option value="B">情境B - 持有到貸款還完</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-calculate">計算</button>
+            </form>
+            <div class="result" id="house-result"></div>
+        </div>
+
+        <!-- 股票投資模擬 -->
+        <div class="tab-content" id="stock">
+            <h2>股票投資模擬</h2>
+            <form id="stock-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>初始投入 (元)</label>
+                        <input type="number" name="initial_amount" value="2000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>每年追加 (元)</label>
+                        <input type="number" name="monthly_amount" value="200000" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>預期年報酬率 (%)</label>
+                        <input type="number" name="expected_return" value="12" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>波動率 (%)</label>
+                        <input type="number" name="volatility" value="15" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>投資年限</label>
+                        <input type="number" name="years" value="10" min="1" max="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label>模擬次數</label>
+                        <input type="number" name="simulations" value="10000" min="1000" max="100000" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-calculate">計算</button>
+            </form>
+            <div class="result" id="stock-result"></div>
+        </div>
+
+        <!-- 財務目標規劃 -->
+        <div class="tab-content" id="goal">
+            <h2>財務目標規劃</h2>
+            <form id="goal-form">
+                <div class="form-group">
+                    <label>目標名稱</label>
+                    <input type="text" name="goal_name" value="退休準備金" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>目標金額 (元)</label>
+                        <input type="number" name="target_amount" value="10000000">
+                    </div>
+                    <div class="form-group">
+                        <label>初始投入 (元)</label>
+                        <input type="number" name="initial_amount" value="1000000" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>每月投入 (元)</label>
+                        <input type="number" name="monthly_amount" value="30000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>投資期間 (年)</label>
+                        <input type="number" name="investment_period" value="20" min="1" max="50" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>風險承受度</label>
+                    <select name="risk_tolerance">
+                        <option value="low">保守型</option>
+                        <option value="medium" selected>穩健型</option>
+                        <option value="high">積極型</option>
+                    </select>
+                </div>
+                <h3>投資組合配置 (%)</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>股票</label>
+                        <input type="number" name="stock_allocation" value="60" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>債券</label>
+                        <input type="number" name="bond_allocation" value="20" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ETF</label>
+                        <input type="number" name="etf_allocation" value="15" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>定存</label>
+                        <input type="number" name="deposit_allocation" value="5" min="0" max="100">
+                    </div>
+                </div>
+                <div class="allocation-total">總計: <span id="total-allocation">100</span>%</div>
+                <button type="submit" class="btn-calculate">計算</button>
+            </form>
+            <div class="result" id="goal-result"></div>
+            <canvas id="goal-chart" style="display: none; max-height: 400px;"></canvas>
+        </div>
+
+        <!-- 載入動畫 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>計算中...</p>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
