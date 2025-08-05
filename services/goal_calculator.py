@@ -1,6 +1,5 @@
 import numpy as np
 from typing import Dict, List, Optional
-from scipy.optimize import newton
 import math
 
 from models.request_models import (
@@ -139,33 +138,12 @@ class InvestmentCalculator:
             else:
                 annualized_return = 0
             
-            # 計算內部報酬率 (IRR)
-            def npv(monthly_rate_guess):
-                """淨現值函數，用於計算IRR"""
-                if monthly_rate_guess <= -1:
-                    return float('inf')
-                    
-                npv_value = 0
-                
-                # 第0個月：初始投入 + 第一次定投
-                npv_value -= (request.initial_amount + request.monthly_amount)
-                
-                # 第1到第total_months-1個月：每月定投
-                for month in range(1, total_months):
-                    npv_value -= request.monthly_amount / (1 + monthly_rate_guess) ** month
-                
-                # 第total_months個月：收回最終價值
-                npv_value += final_value / (1 + monthly_rate_guess) ** total_months
-                
-                return npv_value
-            
+            # 簡化的IRR計算（避免使用scipy）
             try:
-                # 使用牛頓法求解月IRR，然後轉換為年IRR
-                total_annual_return = dividend_rate + growth_rate
-                monthly_irr = newton(npv, total_annual_return/12)
-                irr = ((1 + monthly_irr) ** 12 - 1) * 100
+                irr = self._calculate_irr_simple(
+                    total_investment, final_value, request.years, request.monthly_amount
+                )
             except:
-                # 如果無法收斂，使用近似值
                 irr = annualized_return
             
             # 計算投資報酬率 (ROI)
@@ -204,6 +182,36 @@ class InvestmentCalculator:
                 annualized_return=0, dividend_income=0, capital_gain=0,
                 dividend_ratio=0, capital_gain_ratio=0
             )
+
+    def _calculate_irr_simple(self, total_investment: float, final_value: float, 
+                             years: int, monthly_amount: float) -> float:
+        """簡化的IRR計算，避免使用scipy"""
+        # 使用二分搜尋法來找IRR
+        low_rate = -0.5  # -50%
+        high_rate = 2.0  # 200%
+        tolerance = 0.0001
+        max_iterations = 100
+        
+        for _ in range(max_iterations):
+            mid_rate = (low_rate + high_rate) / 2
+            npv = self._calculate_npv(total_investment, final_value, years, monthly_amount, mid_rate)
+            
+            if abs(npv) < tolerance:
+                return mid_rate * 100
+            elif npv > 0:
+                low_rate = mid_rate
+            else:
+                high_rate = mid_rate
+        
+        # 如果無法收斂，返回簡化的年化報酬率
+        return ((final_value / total_investment) ** (1/years) - 1) * 100
+    
+    def _calculate_npv(self, total_investment: float, final_value: float, 
+                      years: int, monthly_amount: float, rate: float) -> float:
+        """計算淨現值"""
+        npv = -total_investment
+        npv += final_value / ((1 + rate) ** years)
+        return npv
 
     # =============== 房屋投資分析 ===============
     def calculate_house_investment(self, request: HouseInvestmentRequest) -> HouseInvestmentResponse:
